@@ -1,20 +1,26 @@
-using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using PhoneStore.Models;
+using Microsoft.EntityFrameworkCore;
+using PhoneShop.DB;
+using PhoneShop.Models;
+using System.Diagnostics;
 
-namespace PhoneStore.Controllers
+namespace PhoneShop.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+        private readonly PhoneShopDbContext _context;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(PhoneShopDbContext context)
         {
-            _logger = logger;
+            _context = context;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
+            var categories = await _context.Categories.ToListAsync();
+            var products = await _context.Products.ToListAsync();
+            ViewBag.Categories = categories;
+            ViewBag.Products = products;
             return View();
         }
 
