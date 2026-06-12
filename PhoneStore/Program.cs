@@ -1,5 +1,12 @@
+﻿using Microsoft.AspNetCore;
+using PhoneStore.DB;
+using System.Net;
+
 var builder = WebApplication.CreateBuilder(args);
 
+//add db to services
+builder.Services.AddDbContext<PhoneStoreDbContext>
+    (o => o.UseSqlServer(builder.Configuration.GetConnectionString("PhoneStoreConnection")));
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
@@ -14,14 +21,20 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.UseStaticFiles();
-
 app.UseRouting();
 
 app.UseAuthorization();
 
+app.MapStaticAssets();
+
+app.MapControllerRoute(
+  name: "areas",
+  pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}"
+);
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=Home}/{action=Index}/{id?}")
+    .WithStaticAssets();
+
 
 app.Run();
