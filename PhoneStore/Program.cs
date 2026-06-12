@@ -1,4 +1,10 @@
+using Microsoft.EntityFrameworkCore;
+using PhoneShop.DB;
+
 var builder = WebApplication.CreateBuilder(args);
+
+// Add db to the container.
+builder.Services.AddDbContext<PhoneShopDbContext>(o => o.UseSqlServer(builder.Configuration.GetConnectionString("PhoneShopConnection")));
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
@@ -14,14 +20,21 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.UseStaticFiles();
-
 app.UseRouting();
 
 app.UseAuthorization();
 
+app.MapStaticAssets();
+
+app.MapControllerRoute(
+    name: "areas",
+    pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}"
+    );
+
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=Home}/{action=Index}/{id?}")
+    .WithStaticAssets();
+
 
 app.Run();
